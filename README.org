@@ -1,0 +1,173 @@
+# -*- fill-column:75; coding: utf-8; -*-
+#+TITLE: ox-blog user's manual
+
+Ox-blog is a Blog exporter for org-mode version 8.1 and up
+
+You need org-mode version 8.1 or above.  For subtree publishing where both
+the headline is used as title and tags are on the headline you need
+org-mode version 8.2.5g or above.
+
+
+* Features
+- syntax highlighting using the org-mode internal highlighter, wp-syntax
+  highlighter, Alex Gorbatchev's SyntaxHighlighter, and the wordpress.com
+  version of the SyntaxHighlighter.
+- inline image upload w/ align and style information
+- linked document upload and linking
+- math equations / inline math (see org manual section "Embedded LaTeX" ->
+  "LaTeX fragments") (at least via dvipng; mathjax and imagemagick aren't
+  tested)
+  - tex:dvipng
+  - tex:imagemagick (untested)
+  - tex:t Do the right thing automatically (MathJax) (untested_
+  - tex:nil Do not process LaTeX fragments at all
+  - tex:verbatim Verbatim export, for jsMath or so
+- tags, categories, auto-creation of new ones
+- "publish" interpreted by role:
+  - contributor -> "pending" (for review by the editor)
+  - author and administrator -> "publish"
+- drafts
+- subtree posting
+- SCHEDULED publishing / future posting
+** Major Issues
+  - currently doesn't use org-mode's category property
+  - scheduled publishing can have spurious time offsets
+  - double toc when toc /= nil
+
+
+* Installation
+
+Download xml-rpc.el, e.g. from https://launchpad.net/xml-rpc-el and put it
+in your load-path (or install via ELPA).  Put ox-blog.el in your load-path.
+
+Add the following line in your .emacs (after loading org-mode):
+
+#+begin_src emacs-lisp
+(require 'ox-blog)
+#+end_src
+
+
+* Setting up a blog
+
+The ox-blog exporter is derived from the HTML exporter, so you can use
+most of the options the HTML exporter provides.
+
+** in-file setup
+You can export each org-file to a blog by adding some lines:
+
+#+begin_example
+#+BLOG_URL: http:/link.to.your.blog.org
+#+BLOG_USERNAME: username
+#+end_example
+
+When exporting the file you'll be asked for your password.  If you leave
+out the username, you will be prompted for it, too.
+
+
+** setup in your .emacs
+The other way to set up a blog is to define it by an entry in the
+=org-blog-project-alist=.  This is similar to an Org mode publishing
+project.
+
+For a minimal definition you need a name to identify a project and at least
+- =:base-directory= the directory where you posts to be blogged are saved
+- =:blog-url= the URL of your blog
+
+Optional parameters are:
+- =:blog-id= the ID of your blog
+  If in doubt, go to your blog, append =/xmlrpc.php?rsd= to it, 
+  =http://example.com/my/blog/xmlrpc.php?rsd=
+- =:blog-username= your username to access the blog.
+- =:blog-password= Note: you shouldn't put your password in configuration
+  files.
+- =:blog-post_type= Default "post", could be set to "page".
+- =:blog-syntax-highlighter= use a specific Syntax highlighter. Available
+  are:
+  - "org-mode" is the default,
+  - "syntaxhighligher" for Alex Gorbatchev's SyntaxHighlighter
+  - "wordpress.com" adapted version of syntaxhighlighter for blogs at
+    wordpress.com
+  - "wp-syntax" for the Wp-Syntax plug-in
+  Note: The syntaxhighlighter and wp-syntax plug-ins have to be installed
+  and enabled in your blog before you use them.
+- =:blog-tags= If you have tags you want to use in every single post, you
+  can set them here.
+- =:blog-categories= ditto for categories.
+- =:blog-confirm-new-tags= If set you are asked if unknown tags should be
+  created.  Default unset.
+- =:blog-confirm-new-categories= ditto for categories but default is set.
+- =:blog-upload-filetypes= add filetype that can be uploaded to the
+  blog. Note: your blog has to support the filetype.  Note: not implemented
+  yet; exporter tries to upload everything and barfs when it fails.
+    
+An example setup in your .emacs:
+
+#+begin_src emacs-lisp
+  (setq org-blog-project-alist nil)
+  (add-to-list 'org-blog-project-alist
+               '("my-blog"
+                 :base-directory "~/Documents/blog"
+                 :blog-url "http://www.example.com"
+                 :blog-id 1
+                 :blog-username "johndoe74"
+                 :blog-confirm-new-tags nil
+                 :blog-confirm-new-categories t
+                 :blog-post-type "post"
+                 :blog-syntax-highlighter "wp-syntax"))
+#+end_src
+
+Using this setup, for all files in =~/Documents/blog= you can export to the
+blog.
+
+
+** Keywords
+The following list of keywords are in-buffer versions of the configuration
+variables above.
+
+- =#+BLOG_URL:=
+- =#+BLOG_USERNAME:=
+- =#+BLOG_ID:=
+- =#+BLOG_USERNAME:=
+- =#+BLOG_POST_ID:=
+- =#+BLOG_PUBLISH_DATETIME:=
+- =#+BLOG_SYNTAX_HIGHLIGHTER:=
+- =#+BLOG_TAGS:=
+- =#+BLOG_CATEGORIES:=
+- =#+BLOG_CONFIRM_NEW_TAGS:=
+- =#+BLOG_CONFIRM_NEW_CATEGORIES:=
+- =#+BLOG_UPLOAD_FILETYPES:=
+
+Additional in-file keywords are:
+
+- =#+BLOG:= :: rest of the line gets inserted verbatim in blog export, but
+               not when using other export engines.
+- =#+BLOG_MORE:= :: Use to separate the teaser from the rest of your blog
+                    post.
+                    You can also insert a teaser by using 
+                    #+begin_example
+                      ,#+BLOG: <!--more-->
+                    #+end_example
+- =#+BLOG_DOC_LINK:= :: link to another version of the blog post.  The
+     format chosen has to be available in the same directory as the org
+     file.  E.g. for a pdf version of the file example.org, the file
+     example.pdf has to be available in the same directory. Usage:
+     #+begin_example
+       ,#+BLOG_DOC_LINK pdf PDF version of this document.
+     #+end_example
+
+- =#+ATTR_BLOG:= :: support for image attributes:
+  - :align [right|left|center]
+  - :alt "some text"
+  - :style "padding:20px;"
+
+  Example:
+  
+  #+begin_example
+    ,#+ATTR_BLOG: :align center :style "padding:5px; background:red;"
+    file:psp.png
+  #+end_example
+
+- =#+ATTR_BLOG:= :: support for source block attributes:
+  - :lineno 20
+  - :highlight 3,7-10
+  - :title "source block title"

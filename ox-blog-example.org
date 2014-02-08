@@ -1,0 +1,110 @@
+#+TITLE: ox-blog example post
+#+BLOG_CATEGORIES: org-mode
+#+BLOG_TAGS: Emacs, org-mode, exporter, ox-blog
+#+BLOG_SYNTAX_HIGHLIGHTER: wp-syntax
+#+OPTIONS: toc:nil tex:dvipng
+
+Today I'm demonstrating the blog features of the org-mode ox-blog exporter.
+#+BLOG_MORE:
+
+* Images 
+- A left aligned image:
+  #+begin_src org
+    ,#+ATTR_BLOG: :align left
+    file:links.png
+  #+end_src
+  #+ATTR_BLOG: :align left
+  file:links.png
+
+  For some reasom wordpress likes to flow text to the right of
+  left-aligned images.  So I'm putting some text here, to satisfy it
+  and to put the next bullet where it belongs to.
+
+- An opaque centered image w/ red background and padding:
+  #+begin_src org
+    ,#+ATTR_BLOG: :align center :style "padding:3px; background:red;"
+    file:mitte.png
+  #+end_src
+  #+ATTR_BLOG: :align center :style "padding:3px; background:red;"
+  file:mitte.png
+
+- A transparent right aligned image with beige background:
+  #+begin_src org
+    ,#+ATTR_BLOG: :align right :style "background:beige;"
+    file:rechts-transparent.png
+  #+end_src
+  #+ATTR_BLOG: :align right :style "background:beige;"
+  file:rechts-transparent.png
+
+  For the same reasom as above wordpress likes to flow text to the
+  left of right-aligned images.  So I'm putting some text here, to
+  satisfy it and to put the next part where it belongs to.
+
+* Source Code
+- Without line numbers
+  #+ATTR_BLOG: :lineno nil
+  #+begin_src sh :name "hans"
+    #!/bin/sh
+    echo "Hello world!"
+  #+end_src
+- With line numbers
+  #+ATTR_BLOG: :lineno t
+  #+begin_src sh
+    #!/bin/sh
+    echo "Hello world!"
+  #+end_src
+- With line numbers, beginning at 19, highlight lines 3 and 6-7, and title
+  #+ATTR_BLOG: :lineno 19 :highlight 3,6-7 :title "try command twice in bash"
+  #+begin_src sh
+    try_twice()
+    {
+        $@
+        if (( $? ))
+        then
+            sleep 10
+            $@
+        fi
+    }
+  #+end_src
+
+- Configuration file as `text' source block
+  #+begin_src text
+    define service {
+           use                      generic-service
+           host_name                pop
+           service_description      POP
+           check_command            check_pop
+    }
+    
+    define service {
+           use                     generic-service
+           host_name               imap
+           service_description     IMAP
+           check_command           check_imap
+    }
+    
+    define service {
+           use                      generic-service
+           host_name                mail
+           service_description      Mail Queue
+           check_command            check_nrpe!check_mailq
+    }
+  #+end_src
+  
+* Math
+  - Inline math is just inserted in the middle of a paragraph, for
+    example you can just say that $\sum_{i=1}^n x = 1/2 \cdot n \cdot
+    (n-1)$, and that's it.
+
+  - On the other hand, there's also math blocks.  If you don't use
+    mathjax (if it works...), you can use the same attributes as for
+    images.  Math equation images are transparent, however, so you
+    really get a background color:
+
+    #+attr_blog: :style "padding:2px; background:beige;"
+    \begin{equation}
+    x=\sqrt{b}
+    \end{equation}
+
+
+#+BLOG_DOC_LINK: org Download the org-mode file for this post.
