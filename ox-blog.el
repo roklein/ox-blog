@@ -760,8 +760,6 @@ contextual information."
          (filename (file-name-nondirectory filename-full-path))
         blog-project)
     (dolist (prj org-blog-project-alist)
-      (print org-blog-project-alist)
-      (print prj)
       (let ((b (expand-file-name (file-name-as-directory
                                   (plist-get (cdr prj) :base-directory)))))
         (when (string= filename-full-path
