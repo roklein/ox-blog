@@ -1,10 +1,13 @@
 #+TITLE: ox-blog example post
+#+BLOG_POST_ID: 928
+#+BLOG_URL: http://www.xyzzy.de
 #+BLOG_CATEGORIES: org-mode
 #+BLOG_TAGS: Emacs, org-mode, exporter, ox-blog
 #+BLOG_SYNTAX_HIGHLIGHTER: wp-syntax
 #+OPTIONS: toc:nil tex:dvipng
 
-Today I'm demonstrating the blog features of the org-mode ox-blog exporter.
+This post demonstrating the blogging features of the ox-blog
+exporter for org-mode.
 #+BLOG_MORE:
 
 * Images 
