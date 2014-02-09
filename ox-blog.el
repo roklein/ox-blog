@@ -756,14 +756,15 @@ contextual information."
 (defun org-blog-get-blog-project-from-filename (filename)
   "Return the blog project that FILENAME belongs to."
   ; copied from org-publish
-  (let ((filename (expand-file-name filename))
+  (let* ((filename-full-path  (expand-file-name filename))
+         (filename (file-name-nondirectory filename-full-path))
         blog-project)
     (dolist (prj org-blog-project-alist)
       (print org-blog-project-alist)
       (print prj)
       (let ((b (expand-file-name (file-name-as-directory
                                   (plist-get (cdr prj) :base-directory)))))
-        (when (string= filename
+        (when (string= filename-full-path
                             (expand-file-name filename b))
           (setq blog-project prj))))
     blog-project))
