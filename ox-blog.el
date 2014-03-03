@@ -366,9 +366,18 @@ a communication channel."
                 (style  (org-element-interpret-data (plist-get attributes :style))))
             (when (not (string= "" align))
               (add-to-list 'tmplist (concat "align" align))
-              (add-to-list 'tmplist :class))
+              (add-to-list 'tmplist :class)
+              ;; add ``empty'' :align, so it doesn't show in the export
+              (add-to-list 'tmplist nil)
+              (add-to-list 'tmplist :align))
             (when (not (string= "" style))
-              (add-to-list 'tmplist (substring style 1 -1))
+              (add-to-list 'tmplist
+                           (progn
+                             (when (string= (substring style 0 1) "\"")
+                               (setq style (substring style 1)))
+                             (when (string= (substring style -1) "\"")
+                               (setq style (substring style 0 -1)))
+                             style))
               (add-to-list 'tmplist :style))
             tmplist)))
         info)))))
