@@ -706,50 +706,48 @@ contextual information."
 	 (if (not caption) ""
 	   (format "<label class=\"org-src-name\">%s</label>"
 		   (org-export-data caption info)))
-         (format (concat "\n"
-                         (nth 0 hl) (nth 2 hl)
-                         " "
-                         (nth 4 hl)
-                         "=\""
-                         ;; org-mode uses src class and src- prefix in source
-                         ;; block class names
-                         (if (and (string= highlighter "org-mode")
-                                  (not (string= lang "example")))
-                             "src src-")
-                         "%s\""
-                         ;; line numbers
-                         (let ((lineno (plist-get attributes :lineno )))
-                           (message "\nLine No: %s\n" lineno)
-                           (message "\nAttributes No: %s\n" attributes)
-                           (print lineno)
-                           (cond
-                            ((string= lineno "t")
-                             (and (nth 8 hl)
-                                  (format " %s" (nth 8 hl))))
-                            ((string= lineno "nil")
-                             (and (nth 9 hl)
-                                  (format " %s" (nth 9 hl))))
-                            ((string= lineno "") nil)
-                            ((nth 10 hl)
-                            (format " %s=\"%s\"" (nth 10 hl) lineno))))
-                         ;; highlight lines
-                         (let ((highlight (plist-get attributes :highlight)))
-                           (and highlight
-                                (format " %s=\"%s\"" (nth 11 hl) highlight)))
-                         ;; source title / url
-                         (let ((src-title (plist-get attributes :title)))
-                           (and src-title
-                                (format " %s=%s" (nth 12 hl) src-title)))
-                         "%s"
-                         (nth 1 hl) ;; end of beginning tag
-                         "%s"
-                         (nth 0 hl) (nth 3 hl) (nth 2 hl) (nth 1 hl))
-                 lang
-                 ;; wp-syntax doesn't like foreign attributes in its <pre> tags
-                 (if (string= highlighter "wp-syntax")
-                     ""
-                   label)
-                 code))))))
+         (format
+          (concat
+           "\n"
+           (nth 0 hl) (nth 2 hl)
+           " "
+           (nth 4 hl)
+           "=\""
+           ;; org-mode uses src class and src- prefix in source
+           ;; block class names
+           (if (and (string= highlighter "org-mode")
+                    (not (string= lang "example")))
+               "src src-")
+           "%s\""
+           ;; line numbers
+           (let* ((number-lines (org-element-property :number-lines src-block))
+                  (firstline (case number-lines
+                               (continued (org-export-get-loc src-block info))
+                               (new (or (plist-get attributes :firstline)
+                                        1)))))
+             (cond ((not firstline) (and (nth 9 hl)
+                                         (format " %s" (nth 9 hl))))
+                   (firstline (and (nth 10 hl)
+                                   (format " %s=\"%s\""
+                                           (nth 10 hl)
+                                           firstline)))))
+           (let ((highlight (plist-get attributes :highlight)))
+             (and highlight
+                  (format " %s=\"%s\"" (nth 11 hl) highlight)))
+           ;; source title / url
+           (let ((src-title (plist-get attributes :title)))
+             (and src-title
+                  (format " %s=%s" (nth 12 hl) src-title)))
+           "%s"
+           (nth 1 hl) ;; end of beginning tag
+           "%s"
+           (nth 0 hl) (nth 3 hl) (nth 2 hl) (nth 1 hl))
+          lang
+          ;; wp-syntax doesn't like foreign attributes in its <pre> tags
+          (if (string= highlighter "wp-syntax")
+              ""
+            label)
+          code))))))
 
 
 ;;; helper functions for export

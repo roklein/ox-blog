@@ -168,6 +168,16 @@ Additional in-file keywords are:
   #+end_example
 
 - =#+ATTR_BLOG:= :: support for source block attributes:
-  - :lineno 20
+  - :firstline 20
   - :highlight 3,7-10
   - :title "source block title"
+
+
+  Please note, to get line numbers you need to set the `-n' or `+n' flag on
+  the source block.  `+n' continues line numbers from a earlier source
+  block; `-n' takes the value given in the `:firstline' attribute and
+  defaults to 1.
+
+  The ``:highlight'' attribute highlightes the line numbers and ranges
+  given.  Line numbers are absolute for the block, beginning at 1.  They
+  are /not/ relative to the number given in the ``:firstline'' attribute.

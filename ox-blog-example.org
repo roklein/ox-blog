@@ -45,20 +45,18 @@ exporter for org-mode.
 
 * Source Code
 - Without line numbers
-  #+ATTR_BLOG: :lineno nil
   #+begin_src sh :name "hans"
     #!/bin/sh
     echo "Hello world!"
   #+end_src
 - With line numbers
-  #+ATTR_BLOG: :lineno t
-  #+begin_src sh
+  #+begin_src sh -n
     #!/bin/sh
     echo "Hello world!"
   #+end_src
 - With line numbers, beginning at 19, highlight lines 3 and 6-7, and title
-  #+ATTR_BLOG: :lineno 19 :highlight 3,6-7 :title "try command twice in bash"
-  #+begin_src sh
+  #+ATTR_BLOG: :firstline 19 :highlight 3,6-7 :title "try command twice in bash"
+  #+begin_src sh -n
     try_twice()
     {
         $@
